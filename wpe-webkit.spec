@@ -13,13 +13,13 @@
 Summary:	Port of WebKit embeddable web component to WPE
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
-# NOTE: 2.26.x is stable, 2.27.x devel (see DEVEL-2.27 branch)
-Version:	2.26.4
+# NOTE: 2.28.x is stable, 2.29.x devel
+Version:	2.28.0
 Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	4cd2883ec9da38a0ffe413bb75239874
+# Source0-md5:	4298b9d38b4f05f92995422ea9979893
 Patch0:		%{name}-x32.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
@@ -56,7 +56,7 @@ BuildRequires:	libsoup-devel >= 2.54.0
 BuildRequires:	libstdc++-devel >= 6:7.3.0
 BuildRequires:	libtasn1-devel
 BuildRequires:	libwebp-devel
-BuildRequires:	libwpe-devel >= 1.3.0
+BuildRequires:	libwpe-devel >= 1.5.0
 BuildRequires:	libxml2-devel >= 1:2.8.0
 BuildRequires:	libxslt-devel >= 1.1.7
 BuildRequires:	openjpeg2-devel >= 2.2.0
@@ -75,7 +75,7 @@ BuildRequires:	sqlite3-devel >= 3
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	wayland-devel
 BuildRequires:	wayland-egl-devel
-BuildRequires:	wpebackend-fdo-devel >= 1.3.0
+BuildRequires:	wpebackend-fdo-devel >= 1.5.0
 BuildRequires:	woff2-devel >= 1.0.2
 BuildRequires:	xdg-dbus-proxy
 BuildRequires:	xorg-lib-libICE-devel
@@ -102,6 +102,7 @@ Requires:	libxml2 >= 1:2.8.0
 Requires:	libxslt >= 1.1.7
 Requires:	openjpeg2 >= 2.2.0
 Requires:	woff2 >= 1.0.2
+Requires:	wpebackend-fdo >= 1.5.0
 # Source/JavaScriptCore/CMakeLists.txt /WTF_CPU_
 ExclusiveArch:	%{ix86} %{x8664} x32 %{arm} aarch64 hppa mips ppc ppc64 ppc64le s390 s390x sh4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -126,7 +127,7 @@ Requires:	%{name} = %{version}-%{release}
 Requires:	glib2-devel >= 1:2.44
 Requires:	libsoup-devel >= 2.54.0
 Requires:	libstdc++-devel >= 6:7.3.0
-Requires:	libwpe-devel >= 1.3.0
+Requires:	libwpe-devel >= 1.5.0
 
 %description devel
 Development files for WebKit for WPE.
