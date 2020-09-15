@@ -1,4 +1,6 @@
 # TODO: review configure options:
+# - ENABLE_WEBXR (BR: OpenXR >= 1.0.9, openxr.pc)?
+# - ENABLE_THUNDER (https://github.com/rdkcentral/Thunder)?
 # - FTL_JIT on !x86_64?
 # - WEB_RTC+MEDIA_STREAM (BR: openwebrtc)
 #
@@ -13,13 +15,13 @@
 Summary:	Port of WebKit embeddable web component to WPE
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
-# NOTE: 2.28.x is stable, 2.29.x devel
-Version:	2.28.0
-Release:	2
+# NOTE: 2.30.x is stable, 2.31.x devel
+Version:	2.30.0
+Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	4298b9d38b4f05f92995422ea9979893
+# Source0-md5:	b91b85b645061189765a9455a0539df1
 Patch0:		%{name}-x32.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
@@ -48,7 +50,7 @@ BuildRequires:	harfbuzz-devel >= 1.4.2
 BuildRequires:	harfbuzz-icu-devel >= 1.4.2
 BuildRequires:	libepoxy-devel >= 1.4.0
 BuildRequires:	libgcrypt-devel >= 1.7.0
-BuildRequires:	libicu-devel >= 59
+BuildRequires:	libicu-devel >= 60.2
 BuildRequires:	libjpeg-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libseccomp-devel
@@ -56,7 +58,7 @@ BuildRequires:	libsoup-devel >= 2.54.0
 BuildRequires:	libstdc++-devel >= 6:7.3.0
 BuildRequires:	libtasn1-devel
 BuildRequires:	libwebp-devel
-BuildRequires:	libwpe-devel >= 1.5.0
+BuildRequires:	libwpe-devel >= 1.8.0
 BuildRequires:	libxml2-devel >= 1:2.8.0
 BuildRequires:	libxslt-devel >= 1.1.7
 BuildRequires:	openjpeg2-devel >= 2.2.0
@@ -75,7 +77,7 @@ BuildRequires:	sqlite3-devel >= 3
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	wayland-devel
 BuildRequires:	wayland-egl-devel
-BuildRequires:	wpebackend-fdo-devel >= 1.5.0
+BuildRequires:	wpebackend-fdo-devel >= 1.8.0
 BuildRequires:	woff2-devel >= 1.0.2
 BuildRequires:	xdg-dbus-proxy
 BuildRequires:	xorg-lib-libICE-devel
@@ -102,7 +104,7 @@ Requires:	libxml2 >= 1:2.8.0
 Requires:	libxslt >= 1.1.7
 Requires:	openjpeg2 >= 2.2.0
 Requires:	woff2 >= 1.0.2
-Requires:	wpebackend-fdo >= 1.5.0
+Requires:	wpebackend-fdo >= 1.8.0
 # Source/JavaScriptCore/CMakeLists.txt /WTF_CPU_
 ExclusiveArch:	%{ix86} %{x8664} x32 %{arm} aarch64 hppa mips ppc ppc64 ppc64le s390 s390x sh4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
