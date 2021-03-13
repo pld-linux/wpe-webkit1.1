@@ -16,12 +16,12 @@ Summary:	Port of WebKit embeddable web component to WPE
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
 # NOTE: 2.30.x is stable, 2.31.x devel
-Version:	2.30.0
+Version:	2.30.5
 Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	b91b85b645061189765a9455a0539df1
+# Source0-md5:	63a9a7b7f29862ec827a730ba6542e80
 Patch0:		%{name}-x32.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
@@ -70,6 +70,7 @@ BuildRequires:	pkgconfig(cairo-gl) >= 1.10.2
 BuildRequires:	pkgconfig(cairo-glx) >= 1.10.2
 %endif
 BuildRequires:	python >= 1:2.7.0
+BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.699
 BuildRequires:	ruby >= 1:1.9
 BuildRequires:	ruby-modules >= 1:1.9
