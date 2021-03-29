@@ -4,9 +4,6 @@
 # - FTL_JIT on !x86_64?
 # - WEB_RTC+MEDIA_STREAM (BR: openwebrtc)
 #
-# Conditional build:
-%bcond_with	cairogl		# accelerated 2D canvas using cairo-gl
-#
 # it's not possible to build this with debuginfo on 32bit archs due to
 # memory constraints during linking
 %ifarch %{ix86} x32
@@ -15,13 +12,13 @@
 Summary:	Port of WebKit embeddable web component to WPE
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
-# NOTE: 2.30.x is stable, 2.31.x devel
-Version:	2.30.5
-Release:	2
+# NOTE: 2.32.x is stable, 2.33.x devel
+Version:	2.32.0
+Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	63a9a7b7f29862ec827a730ba6542e80
+# Source0-md5:	5e20eb2cbb045d7bd460df9c7730abea
 Patch0:		%{name}-x32.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
@@ -36,7 +33,7 @@ BuildRequires:	docbook-dtd412-xml
 BuildRequires:	fontconfig-devel >= 2.13.0
 BuildRequires:	freetype-devel >= 1:2.9.0
 BuildRequires:	gcc-c++ >= 6:7.3.0
-BuildRequires:	glib2-devel >= 1:2.44
+BuildRequires:	glib2-devel >= 1:2.67.1
 BuildRequires:	glibc-misc
 BuildRequires:	gperf >= 3.0.1
 BuildRequires:	gstreamer-devel >= 1.14
@@ -64,17 +61,13 @@ BuildRequires:	libxslt-devel >= 1.1.7
 BuildRequires:	openjpeg2-devel >= 2.2.0
 BuildRequires:	perl-base >= 1:5.10.0
 BuildRequires:	pkgconfig
-%if %{with cairogl}
-BuildRequires:	pkgconfig(cairo-egl) >= 1.10.2
-BuildRequires:	pkgconfig(cairo-gl) >= 1.10.2
-BuildRequires:	pkgconfig(cairo-glx) >= 1.10.2
-%endif
 BuildRequires:	python >= 1:2.7.0
 BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.699
 BuildRequires:	ruby >= 1:1.9
 BuildRequires:	ruby-modules >= 1:1.9
 BuildRequires:	sqlite3-devel >= 3
+BuildRequires:	systemd-devel
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	wayland-devel
 BuildRequires:	wayland-egl-devel
@@ -94,7 +87,7 @@ Requires:	atk >= 1:2.16.0
 Requires:	cairo >= 1.16.0
 Requires:	fontconfig-libs >= 2.13.0
 Requires:	freetype >= 1:2.9.0
-Requires:	glib2 >= 1:2.44
+Requires:	glib2 >= 1:2.67.1
 Requires:	gstreamer >= 1.2.3
 Requires:	gstreamer-plugins-base >= 1.2.3
 Requires:	harfbuzz >= 1.4.2
@@ -127,7 +120,7 @@ Summary:	Development files for WebKit for WPE
 Summary(pl.UTF-8):	Pliki programistyczne komponentu WebKit dla WPE
 Group:		X11/Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	glib2-devel >= 1:2.44
+Requires:	glib2-devel >= 1:2.67.1
 Requires:	libsoup-devel >= 2.54.0
 Requires:	libstdc++-devel >= 6:7.3.0
 Requires:	libwpe-devel >= 1.5.0
@@ -159,7 +152,6 @@ Dokumentacja API WebKita.
 install -d build
 cd build
 %cmake .. \
-	%{?with_cairogl:-DENABLE_ACCELERATED_2D_CANVAS=ON} \
 	-DENABLE_GEOLOCATION=ON \
 	-DENABLE_GTKDOC=ON \
 %ifarch x32
@@ -200,7 +192,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc NEWS
 %attr(755,root,root) %{_bindir}/WPEWebDriver
 %attr(755,root,root) %{_libdir}/libWPEWebKit-1.0.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libWPEWebKit-1.0.so.3
+%attr(755,root,root) %ghost %{_libdir}/libWPEWebKit-1.0.so.4
 %if "%{_libexecdir}" != "%{_libdir}"
 %dir %{_libexecdir}/wpe-webkit-1.0
 %endif
