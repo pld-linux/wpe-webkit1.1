@@ -13,12 +13,12 @@ Summary:	Port of WebKit embeddable web component to WPE
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
 # NOTE: 2.32.x is stable, 2.33.x devel
-Version:	2.32.0
+Version:	2.32.3
 Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	5e20eb2cbb045d7bd460df9c7730abea
+# Source0-md5:	1e34412c50fe8d1ff084738477ecad7e
 Patch0:		%{name}-x32.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
@@ -192,7 +192,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc NEWS
 %attr(755,root,root) %{_bindir}/WPEWebDriver
 %attr(755,root,root) %{_libdir}/libWPEWebKit-1.0.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libWPEWebKit-1.0.so.4
+%attr(755,root,root) %ghost %{_libdir}/libWPEWebKit-1.0.so.3
 %if "%{_libexecdir}" != "%{_libdir}"
 %dir %{_libexecdir}/wpe-webkit-1.0
 %endif
