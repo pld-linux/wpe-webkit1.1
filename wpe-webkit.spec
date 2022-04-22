@@ -3,6 +3,9 @@
 # - ENABLE_THUNDER (https://github.com/rdkcentral/Thunder)?
 # - FTL_JIT on !x86_64?
 # - WEB_RTC+MEDIA_STREAM (BR: openwebrtc)
+# - USE_AVIF? (BR: libavif-devel >= 0.9.0)
+# - USE_JPEGXL? (BR: libjxl-devel)
+# - libsoup3 for HTTP/2 (drop USE_SOUP2=ON)? (BR: libsoup3-devel >= 3.0.0; changes abi tag from -1.0 to -1.1; doc tag remains -1.0)
 #
 # it's not possible to build this with debuginfo on 32bit archs due to
 # memory constraints during linking
@@ -12,13 +15,13 @@
 Summary:	Port of WebKit embeddable web component to WPE
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
-# NOTE: 2.32.x is stable, 2.33.x devel
-Version:	2.32.3
-Release:	2
+# NOTE: 2.36.x is stable, 2.37.x devel
+Version:	2.36.1
+Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	1e34412c50fe8d1ff084738477ecad7e
+# Source0-md5:	7ba1c7fd0f67891ad137d11cac12f7a9
 Patch0:		%{name}-x32.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
@@ -36,18 +39,19 @@ BuildRequires:	gcc-c++ >= 6:7.3.0
 BuildRequires:	glib2-devel >= 1:2.67.1
 BuildRequires:	glibc-misc
 BuildRequires:	gperf >= 3.0.1
-BuildRequires:	gstreamer-devel >= 1.14
-BuildRequires:	gstreamer-gl-devel >= 1.10.0
+BuildRequires:	gstreamer-devel >= 1.14.0
+BuildRequires:	gstreamer-gl-devel >= 1.14.0
 # codecparsers,mpegts with -DUSE_GSTREAMER_MPEGTS=ON
-#BuildRequires:	gstreamer-plugins-bad-devel >= 1.10.0
+#BuildRequires:	gstreamer-plugins-bad-devel >= 1.14.0
 # app,audio,fft,pbutils,tag,video
-BuildRequires:	gstreamer-plugins-base-devel >= 1.10.0
+BuildRequires:	gstreamer-plugins-base-devel >= 1.14.0
 BuildRequires:	gtk-doc >= 1.10
 BuildRequires:	harfbuzz-devel >= 1.4.2
 BuildRequires:	harfbuzz-icu-devel >= 1.4.2
+BuildRequires:	lcms2-devel >= 2
 BuildRequires:	libepoxy-devel >= 1.4.0
 BuildRequires:	libgcrypt-devel >= 1.7.0
-BuildRequires:	libicu-devel >= 60.2
+BuildRequires:	libicu-devel >= 61.2
 BuildRequires:	libjpeg-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libseccomp-devel
@@ -166,7 +170,8 @@ cd build
 	-DHAVE_SSE2_EXTENSIONS=ON \
 %endif
 	-DPORT=WPE \
-	-DSHOULD_INSTALL_JS_SHELL=ON
+	-DSHOULD_INSTALL_JS_SHELL=ON \
+	-DUSE_SOUP2=ON
 
 %{__make}
 
