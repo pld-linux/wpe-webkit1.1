@@ -17,7 +17,7 @@ Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
 # NOTE: 2.36.x is stable, 2.37.x devel
 Version:	2.36.1
-Release:	2
+Release:	3
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
