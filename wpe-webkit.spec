@@ -107,6 +107,8 @@ Requires:	wpebackend-fdo >= 1.8.0
 ExclusiveArch:	%{ix86} %{x8664} x32 %{arm} aarch64 hppa mips ppc ppc64 ppc64le s390 s390x sh4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+%define		_enable_debug_packages	0
+
 %description
 wpe-webkit is a port of the WebKit embeddable web component to WPE.
 
