@@ -1,10 +1,12 @@
 # TODO: review configure options:
-# - ENABLE_WEBXR (BR: OpenXR >= 1.0.9, openxr.pc)?
-# - ENABLE_THUNDER (https://github.com/rdkcentral/Thunder)?
+# - ENABLE_WEBXR (experimental; BR: OpenXR >= 1.0.9, openxr.pc)?
+# - ENABLE_ENCRYPTED_MEDIA, ENABLE_THUNDER (experimental; https://github.com/rdkcentral/Thunder)?
 # - FTL_JIT on !x86_64?
+# - MEDIA_RECORDER (experimental; BR: gstreamer-transcoder-devel >= 1.20)
+# - WEB_RTC (experimental; BR: gstreamer-plugins-bad-devel (webrtc component) >= 1.20, openssl-devel)
 # - WEB_RTC+MEDIA_STREAM (BR: openwebrtc)
-# - USE_AVIF? (BR: libavif-devel >= 0.9.0)
-# - USE_JPEGXL? (BR: libjxl-devel)
+# - USE_AVIF? (experimental; BR: libavif-devel >= 0.9.0)
+# - USE_JPEGXL? (experimental; BR: libjxl-devel)
 # - libsoup3 for HTTP/2 (drop USE_SOUP2=ON)? (BR: libsoup3-devel >= 3.0.0; changes abi tag from -1.0 to -1.1; doc tag remains -1.0)
 #
 # it's not possible to build this with debuginfo on 32bit archs due to
@@ -15,14 +17,15 @@
 Summary:	Port of WebKit embeddable web component to WPE
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
-# NOTE: 2.36.x is stable, 2.37.x devel
-Version:	2.36.1
-Release:	3
+# NOTE: 2.38.x is stable, 2.39.x devel
+Version:	2.38.6
+Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	7ba1c7fd0f67891ad137d11cac12f7a9
+# Source0-md5:	eb44d3132208218f3752170cae3220b8
 Patch0:		%{name}-x32.patch
+Patch1:		%{name}-gcc13.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
 BuildRequires:	EGL-devel
@@ -31,18 +34,19 @@ BuildRequires:	at-spi2-atk-devel >= 2.5.3
 BuildRequires:	atk-devel >= 1:2.16.0
 BuildRequires:	bubblewrap >= 0.3.1
 BuildRequires:	cairo-devel >= 1.16.0
-BuildRequires:	cmake >= 3.10
+BuildRequires:	cmake >= 3.20
 BuildRequires:	docbook-dtd412-xml
 BuildRequires:	fontconfig-devel >= 2.13.0
 BuildRequires:	freetype-devel >= 1:2.9.0
 BuildRequires:	gcc-c++ >= 6:7.3.0
+BuildRequires:	gi-docgen
 BuildRequires:	glib2-devel >= 1:2.67.1
 BuildRequires:	glibc-misc
 BuildRequires:	gperf >= 3.0.1
 BuildRequires:	gstreamer-devel >= 1.14.0
 BuildRequires:	gstreamer-gl-devel >= 1.14.0
-# codecparsers,mpegts with -DUSE_GSTREAMER_MPEGTS=ON
-#BuildRequires:	gstreamer-plugins-bad-devel >= 1.14.0
+# codecparsers,mpegts
+BuildRequires:	gstreamer-plugins-bad-devel >= 1.14.0
 # app,audio,fft,pbutils,tag,video
 BuildRequires:	gstreamer-plugins-base-devel >= 1.14.0
 BuildRequires:	gtk-doc >= 1.10
@@ -56,10 +60,10 @@ BuildRequires:	libjpeg-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libseccomp-devel
 BuildRequires:	libsoup-devel >= 2.54.0
-BuildRequires:	libstdc++-devel >= 6:7.3.0
+BuildRequires:	libstdc++-devel >= 6:8.3
 BuildRequires:	libtasn1-devel
 BuildRequires:	libwebp-devel
-BuildRequires:	libwpe-devel >= 1.8.0
+BuildRequires:	libwpe-devel >= 1.14.0
 BuildRequires:	libxml2-devel >= 1:2.8.0
 BuildRequires:	libxslt-devel >= 1.1.7
 BuildRequires:	openjpeg2-devel >= 2.2.0
@@ -75,7 +79,7 @@ BuildRequires:	systemd-devel
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	wayland-devel
 BuildRequires:	wayland-egl-devel
-BuildRequires:	wpebackend-fdo-devel >= 1.8.0
+BuildRequires:	wpebackend-fdo-devel >= 1.9.0
 BuildRequires:	woff2-devel >= 1.0.2
 BuildRequires:	xdg-dbus-proxy
 BuildRequires:	xorg-lib-libICE-devel
@@ -98,11 +102,12 @@ Requires:	harfbuzz >= 1.4.2
 Requires:	libepoxy >= 1.4.0
 Requires:	libgcrypt >= 1.7.0
 Requires:	libsoup >= 2.54.0
+Requires:	libwpe >= 1.14.0
 Requires:	libxml2 >= 1:2.8.0
 Requires:	libxslt >= 1.1.7
 Requires:	openjpeg2 >= 2.2.0
 Requires:	woff2 >= 1.0.2
-Requires:	wpebackend-fdo >= 1.8.0
+Requires:	wpebackend-fdo >= 1.9.0
 # Source/JavaScriptCore/CMakeLists.txt /WTF_CPU_
 ExclusiveArch:	%{ix86} %{x8664} x32 %{arm} aarch64 hppa mips ppc ppc64 ppc64le s390 s390x sh4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -128,8 +133,8 @@ Group:		X11/Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	glib2-devel >= 1:2.67.1
 Requires:	libsoup-devel >= 2.54.0
-Requires:	libstdc++-devel >= 6:7.3.0
-Requires:	libwpe-devel >= 1.5.0
+Requires:	libstdc++-devel >= 6:8.3
+Requires:	libwpe-devel >= 1.14.0
 
 %description devel
 Development files for WebKit for WPE.
@@ -153,11 +158,10 @@ Dokumentacja API WebKita.
 %prep
 %setup -q -n wpewebkit-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
-install -d build
-cd build
-%cmake .. \
+%cmake -B build \
 	-DENABLE_GEOLOCATION=ON \
 	-DENABLE_GTKDOC=ON \
 %ifarch x32
@@ -175,7 +179,7 @@ cd build
 	-DSHOULD_INSTALL_JS_SHELL=ON \
 	-DUSE_SOUP2=ON
 
-%{__make}
+%{__make} -C build
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -200,6 +204,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/WPEWebDriver
 %attr(755,root,root) %{_libdir}/libWPEWebKit-1.0.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libWPEWebKit-1.0.so.3
+%{_libdir}/girepository-1.0/WPEJavaScriptCore-1.0.typelib
+%{_libdir}/girepository-1.0/WPEWebExtension-1.0.typelib
+%{_libdir}/girepository-1.0/WPEWebKit-1.0.typelib
 %if "%{_libexecdir}" != "%{_libdir}"
 %dir %{_libexecdir}/wpe-webkit-1.0
 %endif
@@ -215,10 +222,14 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libWPEWebKit-1.0.so
 %{_includedir}/wpe-webkit-1.0
+%{_datadir}/gir-1.0/WPEJavaScriptCore-1.0.gir
+%{_datadir}/gir-1.0/WPEWebExtension-1.0.gir
+%{_datadir}/gir-1.0/WPEWebKit-1.0.gir
 %{_pkgconfigdir}/wpe-web-extension-1.0.pc
 %{_pkgconfigdir}/wpe-webkit-1.0.pc
 
 %files apidocs
 %defattr(644,root,root,755)
-%{_gtkdocdir}/wpe-1.0
-%{_gtkdocdir}/wpe-webextensions-1.0
+%{_gtkdocdir}/wpe-javascriptcore-1.0
+%{_gtkdocdir}/wpe-web-extension-1.0
+%{_gtkdocdir}/wpe-webkit-1.0
