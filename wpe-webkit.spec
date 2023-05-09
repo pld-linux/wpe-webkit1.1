@@ -12,6 +12,7 @@
 # Conditional build:
 %bcond_without	libsoup2	# libWPEWebKit-1.0 (libsoup2 based) variant
 %bcond_without	libsoup3	# libWPEWebKit-1.1 (libsoup3 based) variant (HTTP/2 support)
+%bcond_with	lowmem		# try to reduce build memory usage by adjusting gcc gc
 #
 # it's not possible to build this with debuginfo on 32bit archs due to
 # memory constraints during linking
@@ -235,6 +236,9 @@ Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2.
 %patch2 -p1
 
 %build
+%if %{with lowmem}
+CXXFLAGS="%{rpmcxxflags} --param ggc-min-expand=20 --param ggc-min-heapsize=65536"
+%endif
 for kind in %{?with_libsoup2:soup2} %{?with_libsoup3:soup3} ; do
 %cmake -B build-${kind} \
 	-DENABLE_GEOLOCATION=ON \
