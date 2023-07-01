@@ -32,6 +32,7 @@ Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
 Patch0:		%{name}-x32.patch
 Patch1:		%{name}-gcc13.patch
 Patch2:		%{name}-driver-version-suffix.patch
+Patch3:		parallel-gir.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
 BuildRequires:	EGL-devel
@@ -234,6 +235,7 @@ Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 %if %{with lowmem}
