@@ -49,6 +49,7 @@ BuildRequires:	gcc-c++ >= 6:7.3.0
 BuildRequires:	gi-docgen
 BuildRequires:	glib2-devel >= 1:2.67.1
 BuildRequires:	glibc-misc
+BuildRequires:	gobject-introspection-devel
 BuildRequires:	gperf >= 3.0.1
 BuildRequires:	gstreamer-devel >= 1.14.0
 BuildRequires:	gstreamer-gl-devel >= 1.14.0
