@@ -4,7 +4,6 @@
 # - FTL_JIT on !x86_64?
 # - WEB_RTC (experimental; BR: gstreamer-plugins-bad-devel (webrtc component) >= 1.20, openssl-devel)
 # - WEB_RTC+MEDIA_STREAM (BR: openwebrtc)
-# - USE_JPEGXL? (experimental; BR: libjxl-devel)
 # - SPEECH_SYNTHESIS? (experimental; BR: flite-devel >= 2.2)
 #
 # Conditional build:
@@ -26,13 +25,13 @@
 Summary:	Port of WebKit embeddable web component to WPE
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
-# NOTE: 2.40.x is stable, 2.41.x devel
-Version:	2.40.3
+# NOTE: 2.42.x is stable, 2.43.x devel
+Version:	2.42.1
 Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	1568a6b0669aef438de51c892b69215b
+# Source0-md5:	82b6c35797d3e640ed3c5e354d030dea
 Patch0:		%{name}-x32.patch
 Patch2:		%{name}-driver-version-suffix.patch
 Patch3:		parallel-gir.patch
@@ -69,12 +68,12 @@ BuildRequires:	libepoxy-devel >= 1.4.0
 BuildRequires:	libgcrypt-devel >= 1.7.0
 BuildRequires:	libicu-devel >= 61.2
 BuildRequires:	libjpeg-devel
+BuildRequires:	libjxl-devel >= 0.7.0
 BuildRequires:	libpng-devel
 BuildRequires:	libseccomp-devel
 %{?with_libsoup2:BuildRequires:	libsoup-devel >= 2.54}
 %{?with_libsoup3:BuildRequires:	libsoup3-devel >= 3.0}
-# -std=c++2a; WebKitCommon.cmake says gcc 9.3.0 is minimum, but 9.5.0 fails to build
-BuildRequires:	libstdc++-devel >= 6:10
+BuildRequires:	libstdc++-devel >= 6:10.2
 BuildRequires:	libtasn1-devel
 BuildRequires:	libwebp-devel
 BuildRequires:	libwpe-devel >= 1.14.0
@@ -116,6 +115,7 @@ Requires:	gstreamer-plugins-base >= 1.2.3
 Requires:	harfbuzz >= 1.4.2
 Requires:	libepoxy >= 1.4.0
 Requires:	libgcrypt >= 1.7.0
+Requires:	libjxl >= 0.7.0
 Requires:	libsoup >= 2.54.0
 Requires:	libwpe >= 1.14.0
 Requires:	libxml2 >= 1:2.8.0
@@ -148,7 +148,7 @@ Group:		X11/Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	glib2-devel >= 1:2.70.0
 Requires:	libsoup-devel >= 2.54.0
-Requires:	libstdc++-devel >= 6:8.3
+Requires:	libstdc++-devel >= 6:10.2
 Requires:	libwpe-devel >= 1.14.0
 
 %description devel
@@ -185,6 +185,7 @@ Requires:	gstreamer-plugins-base >= 1.2.3
 Requires:	harfbuzz >= 1.4.2
 Requires:	libepoxy >= 1.4.0
 Requires:	libgcrypt >= 1.7.0
+Requires:	libjxl >= 0.7.0
 Requires:	libsoup3 >= 3.0.0
 Requires:	libwpe >= 1.14.0
 Requires:	libxml2 >= 1:2.8.0
@@ -213,7 +214,7 @@ Summary(pl.UTF-8):	Pliki programistyczne komponentu WebKit dla WPE z obsługą H
 Group:		X11/Development/Libraries
 Requires:	glib2-devel >= 1:2.67.1
 Requires:	libsoup3-devel >= 3.0.0
-Requires:	libstdc++-devel >= 6:8.3
+Requires:	libstdc++-devel >= 6:10.2
 Requires:	libwpe-devel >= 1.14.0
 Requires:	wpe-webkit1.1 = %{version}-%{release}
 
@@ -251,6 +252,7 @@ Requires:	gstreamer-plugins-base >= 1.2.3
 Requires:	harfbuzz >= 1.4.2
 Requires:	libepoxy >= 1.4.0
 Requires:	libgcrypt >= 1.7.0
+Requires:	libjxl >= 0.7.0
 Requires:	libsoup3 >= 3.0.0
 Requires:	libwpe >= 1.14.0
 Requires:	libxml2 >= 1:2.8.0
@@ -279,7 +281,7 @@ Summary(pl.UTF-8):	Pliki programistyczne komponentu WebKit dla WPE z obsługą H
 Group:		X11/Development/Libraries
 Requires:	glib2-devel >= 1:2.70.0
 Requires:	libsoup3-devel >= 3.0.0
-Requires:	libstdc++-devel >= 6:8.3
+Requires:	libstdc++-devel >= 6:10.2
 Requires:	libwpe-devel >= 1.14.0
 Requires:	wpe-webkit2 = %{version}-%{release}
 
