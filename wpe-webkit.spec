@@ -5,6 +5,7 @@
 # - WEB_RTC (experimental; BR: gstreamer-plugins-bad-devel (webrtc component) >= 1.20, openssl-devel)
 # - WEB_RTC+MEDIA_STREAM (BR: openwebrtc)
 # - SPEECH_SYNTHESIS? (experimental; BR: flite-devel >= 2.2)
+# - ENABLE_WPE_PLATFORM? (BR: libinput-devel >= 1.19.0 wayland-devel >= 1.20 wayland-protocols >= 1.24 xorg-lib-libxkbcommon-devel >= 0.4.0)
 #
 # Conditional build:
 %bcond_without	libsoup2	# libWPEWebKit-1.0 (libsoup2 based) variant
@@ -25,19 +26,20 @@
 Summary:	Port of WebKit embeddable web component to WPE
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
-# NOTE: 2.42.x is stable, 2.43.x devel
-Version:	2.42.1
+# NOTE: 2.44.x is stable, 2.45.x devel
+Version:	2.44.0
 Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	82b6c35797d3e640ed3c5e354d030dea
+# Source0-md5:	fd82ff4f25456630fecef0e8cd0f0a22
 Patch0:		%{name}-x32.patch
 Patch2:		%{name}-driver-version-suffix.patch
 Patch3:		parallel-gir.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
 BuildRequires:	EGL-devel
+BuildRequires:	Mesa-libgbm-devel
 BuildRequires:	OpenGLESv2-devel
 BuildRequires:	at-spi2-atk-devel >= 2.5.3
 BuildRequires:	atk-devel >= 1:2.16.0
@@ -59,12 +61,12 @@ BuildRequires:	gstreamer-plugins-bad-devel >= 1.14.0
 # app,audio,fft,pbutils,tag,video
 BuildRequires:	gstreamer-plugins-base-devel >= 1.14.0
 BuildRequires:	gstreamer-transcoder-devel >= 1.20
-BuildRequires:	gtk-doc >= 1.10
 BuildRequires:	harfbuzz-devel >= 1.4.2
 BuildRequires:	harfbuzz-icu-devel >= 1.4.2
 BuildRequires:	lcms2-devel >= 2
 BuildRequires:	libavif-devel >= 0.9.0
-BuildRequires:	libepoxy-devel >= 1.4.0
+BuildRequires:	libdrm-devel
+BuildRequires:	libepoxy-devel >= 1.5.4
 BuildRequires:	libgcrypt-devel >= 1.7.0
 BuildRequires:	libicu-devel >= 61.2
 BuildRequires:	libjpeg-devel
@@ -90,18 +92,11 @@ BuildRequires:	ruby-modules >= 1:2.5
 BuildRequires:	sqlite3-devel >= 3
 BuildRequires:	systemd-devel
 BuildRequires:	tar >= 1:1.22
+BuildRequires:	udev-devel
 BuildRequires:	unifdef
-BuildRequires:	wayland-devel
-BuildRequires:	wayland-egl-devel
 BuildRequires:	wpebackend-fdo-devel >= 1.9.0
 BuildRequires:	woff2-devel >= 1.0.2
 BuildRequires:	xdg-dbus-proxy
-BuildRequires:	xorg-lib-libICE-devel
-BuildRequires:	xorg-lib-libXcomposite-devel
-BuildRequires:	xorg-lib-libXdamage-devel
-BuildRequires:	xorg-lib-libXext-devel
-BuildRequires:	xorg-lib-libXrender-devel
-BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xz
 BuildRequires:	zlib-devel
 Requires:	at-spi2-atk-libs >= 2.5.3
@@ -113,7 +108,7 @@ Requires:	glib2 >= 1:2.70.0
 Requires:	gstreamer >= 1.2.3
 Requires:	gstreamer-plugins-base >= 1.2.3
 Requires:	harfbuzz >= 1.4.2
-Requires:	libepoxy >= 1.4.0
+Requires:	libepoxy >= 1.5.4
 Requires:	libgcrypt >= 1.7.0
 Requires:	libjxl >= 0.7.0
 Requires:	libsoup >= 2.54.0
@@ -161,7 +156,6 @@ Pliki programistyczne komponentu WebKit dla WPE.
 Summary:	API documentation for WebKit WPE port
 Summary(pl.UTF-8):	Dokumentacja API portu WebKitu do WPE
 Group:		Documentation
-Requires:	gtk-doc-common
 BuildArch:	noarch
 
 %description apidocs
@@ -183,7 +177,7 @@ Requires:	glib2 >= 1:2.67.1
 Requires:	gstreamer >= 1.2.3
 Requires:	gstreamer-plugins-base >= 1.2.3
 Requires:	harfbuzz >= 1.4.2
-Requires:	libepoxy >= 1.4.0
+Requires:	libepoxy >= 1.5.4
 Requires:	libgcrypt >= 1.7.0
 Requires:	libjxl >= 0.7.0
 Requires:	libsoup3 >= 3.0.0
@@ -228,7 +222,6 @@ Pliki programistyczne komponentu WebKit dla WPE z obsługą HTTP/2.
 Summary:	API documentation for WebKit WPE port with HTTP/2 support
 Summary(pl.UTF-8):	Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2
 Group:		Documentation
-Requires:	gtk-doc-common
 BuildArch:	noarch
 
 %description -n wpe-webkit1.1-apidocs
@@ -250,7 +243,7 @@ Requires:	glib2 >= 1:2.70.0
 Requires:	gstreamer >= 1.2.3
 Requires:	gstreamer-plugins-base >= 1.2.3
 Requires:	harfbuzz >= 1.4.2
-Requires:	libepoxy >= 1.4.0
+Requires:	libepoxy >= 1.5.4
 Requires:	libgcrypt >= 1.7.0
 Requires:	libjxl >= 0.7.0
 Requires:	libsoup3 >= 3.0.0
@@ -295,7 +288,6 @@ Pliki programistyczne komponentu WebKit dla WPE z obsługą HTTP/2.
 Summary:	API documentation for WebKit WPE port with HTTP/2 support
 Summary(pl.UTF-8):	Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2
 Group:		Documentation
-Requires:	gtk-doc-common
 BuildArch:	noarch
 
 %description -n wpe-webkit2-apidocs
@@ -312,7 +304,7 @@ Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2.
 
 %build
 %if %{with lowmem}
-CXXFLAGS="%{rpmcxxflags} --param ggc-min-expand=20 --param ggc-min-heapsize=65536"
+CXXFLAGS="%{rpmcxxflags} -DNDEBUG --param ggc-min-expand=20 --param ggc-min-heapsize=65536"
 %endif
 for kind in %{?with_libsoup2:soup2} %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:soup3-2.0} ; do
 %cmake -B build-${kind} \
@@ -332,6 +324,7 @@ for kind in %{?with_libsoup2:soup2} %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:s
 %endif
 	-DPORT=WPE \
 	-DSHOULD_INSTALL_JS_SHELL=ON \
+	-DUSE_LIBBACKTRACE=OFF \
 	$([ "$kind" = "soup2" ] && echo -DUSE_SOUP2=ON)
 
 %{__make} -C build-${kind}
@@ -345,10 +338,8 @@ for kind in %{?with_libsoup2:soup2} %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:s
 	DESTDIR=$RPM_BUILD_ROOT
 done
 
-%if "%{_gtkdocdir}" != "%{_datadir}/gtk-doc/html"
-install -d $RPM_BUILD_ROOT%{_gtkdocdir}
-%{__mv} $RPM_BUILD_ROOT%{_datadir}/gtk-doc/html/* $RPM_BUILD_ROOT%{_gtkdocdir}
-%endif
+install -d $RPM_BUILD_ROOT%{_gidocdir}
+%{__mv} $RPM_BUILD_ROOT%{_docdir}/wpe-* $RPM_BUILD_ROOT%{_gidocdir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -395,9 +386,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files apidocs
 %defattr(644,root,root,755)
-%{_gtkdocdir}/wpe-javascriptcore-1.0
-%{_gtkdocdir}/wpe-web-extension-1.0
-%{_gtkdocdir}/wpe-webkit-1.0
+%{_gidocdir}/wpe-javascriptcore-1.0
+%{_gidocdir}/wpe-web-extension-1.0
+%{_gidocdir}/wpe-webkit-1.0
 %endif
 
 %if %{with api_1_1}
@@ -433,9 +424,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n wpe-webkit1.1-apidocs
 %defattr(644,root,root,755)
-%{_gtkdocdir}/wpe-javascriptcore-1.1
-%{_gtkdocdir}/wpe-web-extension-1.1
-%{_gtkdocdir}/wpe-webkit-1.1
+%{_gidocdir}/wpe-javascriptcore-1.1
+%{_gidocdir}/wpe-web-extension-1.1
+%{_gidocdir}/wpe-webkit-1.1
 %endif
 
 %if %{with api_2_0}
@@ -471,7 +462,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n wpe-webkit2-apidocs
 %defattr(644,root,root,755)
-%{_gtkdocdir}/wpe-javascriptcore-2.0
-%{_gtkdocdir}/wpe-web-process-extension-2.0
-%{_gtkdocdir}/wpe-webkit-2.0
+%{_gidocdir}/wpe-javascriptcore-2.0
+%{_gidocdir}/wpe-web-process-extension-2.0
+%{_gidocdir}/wpe-webkit-2.0
 %endif
