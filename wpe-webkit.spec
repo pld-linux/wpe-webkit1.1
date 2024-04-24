@@ -27,12 +27,12 @@ Summary:	Port of WebKit embeddable web component to WPE
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
 Name:		wpe-webkit
 # NOTE: 2.44.x is stable, 2.45.x devel
-Version:	2.44.0
+Version:	2.44.1
 Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	fd82ff4f25456630fecef0e8cd0f0a22
+# Source0-md5:	51290d5cf1e032145f2a30971393b006
 Patch0:		%{name}-x32.patch
 Patch2:		%{name}-driver-version-suffix.patch
 Patch3:		parallel-gir.patch
