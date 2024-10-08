@@ -6,35 +6,30 @@
 # - WEB_RTC+MEDIA_STREAM (BR: openwebrtc)
 # - SPEECH_SYNTHESIS? (experimental; BR: flite-devel >= 2.2)
 # - ENABLE_WPE_PLATFORM? (BR: libinput-devel >= 1.19.0 wayland-devel >= 1.20 wayland-protocols >= 1.24 xorg-lib-libxkbcommon-devel >= 0.4.0)
+# - ENABLE_WPE_QT_API? (developer mode)
 #
 # Conditional build:
-%bcond_without	libsoup2	# libWPEWebKit-1.0 (libsoup2 based) variant
-%bcond_without	libsoup3	# libWPEWebKit-1.1/2.0 (libsoup3 based) variants (HTTP/2 support)
 %bcond_without	api_1_1		# libWPEWebKit-1.1 (libsoup3 based) variant
 %bcond_without	api_2_0		# libWPEWebKit-2.0 (libsoup3 based) variant
 %bcond_with	lowmem		# try to reduce build memory usage by adjusting gcc gc
 #
-%if %{without libsoup3}
-%undefine	with_api_1_1
-%undefine	with_api_2_0
-%endif
 # it's not possible to build this with debuginfo on 32bit archs due to
 # memory constraints during linking
 %ifarch %{ix86} x32
 %define		_enable_debug_packages		0
 %endif
-Summary:	Port of WebKit embeddable web component to WPE
-Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE
-Name:		wpe-webkit
+Summary:	Port of WebKit embeddable web component to WPE with HTTP/2 support
+Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE z obsługą HTTP/2
+Name:		wpe-webkit1.1
 # NOTE: 2.44.x is stable, 2.45.x devel
-Version:	2.44.1
+Version:	2.46.1
 Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	51290d5cf1e032145f2a30971393b006
-Patch0:		%{name}-x32.patch
-Patch2:		%{name}-driver-version-suffix.patch
+# Source0-md5:	eec67852662a3498680f72041120fc11
+Patch0:		wpe-webkit-x32.patch
+Patch2:		wpe-webkit-driver-version-suffix.patch
 Patch3:		parallel-gir.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
@@ -73,9 +68,9 @@ BuildRequires:	libjpeg-devel
 BuildRequires:	libjxl-devel >= 0.7.0
 BuildRequires:	libpng-devel
 BuildRequires:	libseccomp-devel
-%{?with_libsoup2:BuildRequires:	libsoup-devel >= 2.54}
-%{?with_libsoup3:BuildRequires:	libsoup3-devel >= 3.0}
-BuildRequires:	libstdc++-devel >= 6:10.2
+BuildRequires:	libsoup3-devel >= 3.0
+# -std=c++23
+BuildRequires:	libstdc++-devel >= 6:11.2
 BuildRequires:	libtasn1-devel
 BuildRequires:	libwebp-devel
 BuildRequires:	libwpe-devel >= 1.14.0
@@ -97,77 +92,9 @@ BuildRequires:	unifdef
 BuildRequires:	wpebackend-fdo-devel >= 1.9.0
 BuildRequires:	woff2-devel >= 1.0.2
 BuildRequires:	xdg-dbus-proxy
+BuildRequires:	xorg-lib-libxkbcommon-devel >= 0.4.0
 BuildRequires:	xz
 BuildRequires:	zlib-devel
-Requires:	at-spi2-atk-libs >= 2.5.3
-Requires:	atk >= 1:2.16.0
-Requires:	cairo >= 1.16.0
-Requires:	fontconfig-libs >= 2.13.0
-Requires:	freetype >= 1:2.9.0
-Requires:	glib2 >= 1:2.70.0
-Requires:	gstreamer >= 1.2.3
-Requires:	gstreamer-plugins-base >= 1.2.3
-Requires:	harfbuzz >= 1.4.2
-Requires:	libepoxy >= 1.5.4
-Requires:	libgcrypt >= 1.7.0
-Requires:	libjxl >= 0.7.0
-Requires:	libsoup >= 2.54.0
-Requires:	libwpe >= 1.14.0
-Requires:	libxml2 >= 1:2.8.0
-Requires:	libxslt >= 1.1.7
-Requires:	openjpeg2 >= 2.2.0
-Requires:	woff2 >= 1.0.2
-Requires:	wpebackend-fdo >= 1.9.0
-# Source/JavaScriptCore/CMakeLists.txt /WTF_CPU_
-ExclusiveArch:	%{ix86} %{x8664} x32 %{arm} aarch64 hppa mips ppc ppc64 ppc64le s390 s390x sh4
-BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-%define		_enable_debug_packages	0
-
-%description
-wpe-webkit is a port of the WebKit embeddable web component to WPE.
-
-WPE (Webkit Port for Embedded) is the reference WebKit port for
-embedded and low-consumption computer devices.
-
-%description -l pl.UTF-8
-wpe-webkit to port osadzalnego komponentu WWW WebKit do WPE.
-
-WPE (Webkit Port for Embedded) to wzorcowy port biblioteki WebKit dla
-urządzeń komputerowych wbudowanych oraz o niskim poborze energii.
-
-%package devel
-Summary:	Development files for WebKit for WPE
-Summary(pl.UTF-8):	Pliki programistyczne komponentu WebKit dla WPE
-Group:		X11/Development/Libraries
-Requires:	%{name} = %{version}-%{release}
-Requires:	glib2-devel >= 1:2.70.0
-Requires:	libsoup-devel >= 2.54.0
-Requires:	libstdc++-devel >= 6:10.2
-Requires:	libwpe-devel >= 1.14.0
-
-%description devel
-Development files for WebKit for WPE.
-
-%description devel -l pl.UTF-8
-Pliki programistyczne komponentu WebKit dla WPE.
-
-%package apidocs
-Summary:	API documentation for WebKit WPE port
-Summary(pl.UTF-8):	Dokumentacja API portu WebKitu do WPE
-Group:		Documentation
-BuildArch:	noarch
-
-%description apidocs
-API documentation for WebKit WPE port.
-
-%description apidocs -l pl.UTF-8
-Dokumentacja API portu WebKitu do WPE.
-
-%package -n wpe-webkit1.1
-Summary:	Port of WebKit embeddable web component to WPE with HTTP/2 support
-Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE z obsługą HTTP/2
-Group:		X11/Libraries
 Requires:	at-spi2-atk-libs >= 2.5.3
 Requires:	atk >= 1:2.16.0
 Requires:	cairo >= 1.16.0
@@ -187,47 +114,52 @@ Requires:	libxslt >= 1.1.7
 Requires:	openjpeg2 >= 2.2.0
 Requires:	woff2 >= 1.0.2
 Requires:	wpebackend-fdo >= 1.9.0
+# Source/JavaScriptCore/CMakeLists.txt /WTF_CPU_
+ExclusiveArch:	%{ix86} %{x8664} x32 %{arm} aarch64 hppa mips ppc ppc64 ppc64le s390 s390x sh4
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%description -n wpe-webkit1.1
+%define		_enable_debug_packages	0
+
+%description
 wpe-webkit1.1 is a port of the WebKit embeddable web component to WPE
 with HTTP/2 (libsoup 3) support.
 
 WPE (Webkit Port for Embedded) is the reference WebKit port for
 embedded and low-consumption computer devices.
 
-%description -n wpe-webkit1.1 -l pl.UTF-8
+%description -l pl.UTF-8
 wpe-webkit1.1 to port osadzalnego komponentu WWW WebKit do WPE z
 obsługą HTTP/2 (libsoup 3).
 
 WPE (Webkit Port for Embedded) to wzorcowy port biblioteki WebKit dla
 urządzeń komputerowych wbudowanych oraz o niskim poborze energii.
 
-%package -n wpe-webkit1.1-devel
-Summary:	Development files for WebKit for WPE with HTTP/2 support
-Summary(pl.UTF-8):	Pliki programistyczne komponentu WebKit dla WPE z obsługą HTTP/2
+%package devel
+Summary:	Development files for WebKit for WPE
+Summary(pl.UTF-8):	Pliki programistyczne komponentu WebKit dla WPE
 Group:		X11/Development/Libraries
+Requires:	%{name} = %{version}-%{release}
 Requires:	glib2-devel >= 1:2.67.1
 Requires:	libsoup3-devel >= 3.0.0
-Requires:	libstdc++-devel >= 6:10.2
+Requires:	libstdc++-devel >= 6:11.2
 Requires:	libwpe-devel >= 1.14.0
-Requires:	wpe-webkit1.1 = %{version}-%{release}
 
-%description -n wpe-webkit1.1-devel
+%description devel
 Development files for WebKit for WPE with HTTP/2 support.
 
-%description -n wpe-webkit1.1-devel -l pl.UTF-8
+%description devel -l pl.UTF-8
 Pliki programistyczne komponentu WebKit dla WPE z obsługą HTTP/2.
 
-%package -n wpe-webkit1.1-apidocs
+%package apidocs
 Summary:	API documentation for WebKit WPE port with HTTP/2 support
 Summary(pl.UTF-8):	Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2
 Group:		Documentation
 BuildArch:	noarch
 
-%description -n wpe-webkit1.1-apidocs
+%description apidocs
 API documentation for WebKit WPE port with HTTP/2 support.
 
-%description -n wpe-webkit1.1-apidocs -l pl.UTF-8
+%description apidocs -l pl.UTF-8
 Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2.
 
 %package -n wpe-webkit2
@@ -274,7 +206,7 @@ Summary(pl.UTF-8):	Pliki programistyczne komponentu WebKit dla WPE z obsługą H
 Group:		X11/Development/Libraries
 Requires:	glib2-devel >= 1:2.70.0
 Requires:	libsoup3-devel >= 3.0.0
-Requires:	libstdc++-devel >= 6:10.2
+Requires:	libstdc++-devel >= 6:11.2
 Requires:	libwpe-devel >= 1.14.0
 Requires:	wpe-webkit2 = %{version}-%{release}
 
@@ -347,52 +279,11 @@ rm -rf $RPM_BUILD_ROOT
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
-%post	-n wpe-webkit1.1 -p /sbin/ldconfig
-%postun	-n wpe-webkit1.1 -p /sbin/ldconfig
-
 %post	-n wpe-webkit2 -p /sbin/ldconfig
 %postun	-n wpe-webkit2 -p /sbin/ldconfig
 
-%if %{with libsoup2}
-%files
-%defattr(644,root,root,755)
-%doc NEWS
-%attr(755,root,root) %{_bindir}/WPEWebDriver-1.0
-%attr(755,root,root) %{_libdir}/libWPEWebKit-1.0.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libWPEWebKit-1.0.so.3
-%{_libdir}/girepository-1.0/WPEJavaScriptCore-1.0.typelib
-%{_libdir}/girepository-1.0/WPEWebExtension-1.0.typelib
-%{_libdir}/girepository-1.0/WPEWebKit-1.0.typelib
-%if "%{_libexecdir}" != "%{_libdir}"
-%dir %{_libexecdir}/wpe-webkit-1.0
-%endif
-%attr(755,root,root) %{_libexecdir}/wpe-webkit-1.0/WPENetworkProcess
-%attr(755,root,root) %{_libexecdir}/wpe-webkit-1.0/WPEWebProcess
-%attr(755,root,root) %{_libexecdir}/wpe-webkit-1.0/jsc
-%dir %{_libdir}/wpe-webkit-1.0
-%attr(755,root,root) %{_libdir}/wpe-webkit-1.0/libWPEWebInspectorResources.so
-%dir %{_libdir}/wpe-webkit-1.0/injected-bundle
-%attr(755,root,root) %{_libdir}/wpe-webkit-1.0/injected-bundle/libWPEInjectedBundle.so
-
-%files devel
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libWPEWebKit-1.0.so
-%{_includedir}/wpe-webkit-1.0
-%{_datadir}/gir-1.0/WPEJavaScriptCore-1.0.gir
-%{_datadir}/gir-1.0/WPEWebExtension-1.0.gir
-%{_datadir}/gir-1.0/WPEWebKit-1.0.gir
-%{_pkgconfigdir}/wpe-web-extension-1.0.pc
-%{_pkgconfigdir}/wpe-webkit-1.0.pc
-
-%files apidocs
-%defattr(644,root,root,755)
-%{_gidocdir}/wpe-javascriptcore-1.0
-%{_gidocdir}/wpe-web-extension-1.0
-%{_gidocdir}/wpe-webkit-1.0
-%endif
-
 %if %{with api_1_1}
-%files -n wpe-webkit1.1
+%files
 %defattr(644,root,root,755)
 %doc NEWS
 %attr(755,root,root) %{_bindir}/WPEWebDriver-1.1
@@ -412,7 +303,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/wpe-webkit-1.1/injected-bundle
 %attr(755,root,root) %{_libdir}/wpe-webkit-1.1/injected-bundle/libWPEInjectedBundle.so
 
-%files -n wpe-webkit1.1-devel
+%files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libWPEWebKit-1.1.so
 %{_includedir}/wpe-webkit-1.1
@@ -422,7 +313,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/wpe-web-extension-1.1.pc
 %{_pkgconfigdir}/wpe-webkit-1.1.pc
 
-%files -n wpe-webkit1.1-apidocs
+%files apidocs
 %defattr(644,root,root,755)
 %{_gidocdir}/wpe-javascriptcore-1.1
 %{_gidocdir}/wpe-web-extension-1.1
