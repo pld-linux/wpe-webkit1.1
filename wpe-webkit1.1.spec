@@ -23,7 +23,7 @@ Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE z obsługą HTT
 Name:		wpe-webkit1.1
 # NOTE: 2.44.x is stable, 2.45.x devel
 Version:	2.46.1
-Release:	1
+Release:	2
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
@@ -31,6 +31,7 @@ Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
 Patch0:		wpe-webkit-x32.patch
 Patch2:		wpe-webkit-driver-version-suffix.patch
 Patch3:		parallel-gir.patch
+Patch4:		icu76.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
 BuildRequires:	EGL-devel
@@ -233,6 +234,7 @@ Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2.
 %patch0 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 %if %{with lowmem}
