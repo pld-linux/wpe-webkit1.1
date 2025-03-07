@@ -240,7 +240,7 @@ Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2.
 %if %{with lowmem}
 CXXFLAGS="%{rpmcxxflags} -DNDEBUG --param ggc-min-expand=20 --param ggc-min-heapsize=65536"
 %endif
-for kind in %{?with_libsoup2:soup2} %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:soup3-2.0} ; do
+for kind in %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:soup3-2.0} ; do
 %cmake -B build-${kind} \
 	-DENABLE_GEOLOCATION=ON \
 	-DENABLE_GTKDOC=ON \
@@ -258,8 +258,7 @@ for kind in %{?with_libsoup2:soup2} %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:s
 %endif
 	-DPORT=WPE \
 	-DSHOULD_INSTALL_JS_SHELL=ON \
-	-DUSE_LIBBACKTRACE=OFF \
-	$([ "$kind" = "soup2" ] && echo -DUSE_SOUP2=ON)
+	-DUSE_LIBBACKTRACE=OFF
 
 %{__make} -C build-${kind}
 done
@@ -267,7 +266,7 @@ done
 %install
 rm -rf $RPM_BUILD_ROOT
 
-for kind in %{?with_libsoup2:soup2} %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:soup3-2.0} ; do
+for kind in %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:soup3-2.0} ; do
 %{__make} -C build-${kind} install \
 	DESTDIR=$RPM_BUILD_ROOT
 done
