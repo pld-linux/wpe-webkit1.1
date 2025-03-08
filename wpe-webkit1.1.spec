@@ -22,16 +22,15 @@ Summary:	Port of WebKit embeddable web component to WPE with HTTP/2 support
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE z obsługą HTTP/2
 Name:		wpe-webkit1.1
 # NOTE: 2.44.x is stable, 2.45.x devel
-Version:	2.46.1
-Release:	2
+Version:	2.46.6
+Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	eec67852662a3498680f72041120fc11
+# Source0-md5:	7a649e1795e24dc7b0aaf2371b04f1d7
 Patch0:		wpe-webkit-x32.patch
 Patch2:		wpe-webkit-driver-version-suffix.patch
 Patch3:		parallel-gir.patch
-Patch4:		icu76.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
 BuildRequires:	EGL-devel
@@ -234,12 +233,9 @@ Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2.
 %patch -P0 -p1
 %patch -P2 -p1
 %patch -P3 -p1
-%patch -P4 -p1
 
 %build
-%if %{with lowmem}
-CXXFLAGS="%{rpmcxxflags} -DNDEBUG --param ggc-min-expand=20 --param ggc-min-heapsize=65536"
-%endif
+CXXFLAGS="%{rpmcxxflags} -DNDEBUG %{?with_lowmem:--param ggc-min-expand=20 --param ggc-min-heapsize=65536}"
 for kind in %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:soup3-2.0} ; do
 %cmake -B build-${kind} \
 	-DENABLE_GEOLOCATION=ON \
