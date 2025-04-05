@@ -4,9 +4,9 @@
 # - FTL_JIT on !x86_64?
 # - WEB_RTC (experimental; BR: gstreamer-plugins-bad-devel (webrtc component) >= 1.20, openssl-devel)
 # - WEB_RTC+MEDIA_STREAM (BR: openwebrtc)
-# - SPEECH_SYNTHESIS? (experimental; BR: flite-devel >= 2.2)
 # - ENABLE_WPE_PLATFORM? (BR: libinput-devel >= 1.19.0 wayland-devel >= 1.20 wayland-protocols >= 1.24 xorg-lib-libxkbcommon-devel >= 0.4.0)
 # - ENABLE_WPE_QT_API? (developer mode)
+# - WEBDRIVER_BIDI (experimental)
 #
 # Conditional build:
 %bcond_without	api_1_1		# libWPEWebKit-1.1 (libsoup3 based) variant
@@ -21,13 +21,13 @@
 Summary:	Port of WebKit embeddable web component to WPE with HTTP/2 support
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE z obsługą HTTP/2
 Name:		wpe-webkit1.1
-# NOTE: 2.44.x is stable, 2.45.x devel
-Version:	2.46.6
+# NOTE: 2.48.x is stable, 2.49.x devel
+Version:	2.48.1
 Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	7a649e1795e24dc7b0aaf2371b04f1d7
+# Source0-md5:	ec281adecf623944647443296eff30fd
 Patch0:		wpe-webkit-x32.patch
 Patch2:		wpe-webkit-driver-version-suffix.patch
 Patch3:		parallel-gir.patch
@@ -42,6 +42,8 @@ BuildRequires:	bubblewrap >= 0.3.1
 BuildRequires:	cairo-devel >= 1.16.0
 BuildRequires:	cmake >= 3.20
 BuildRequires:	docbook-dtd412-xml
+# or libspiel-devel with -DUSE_SPIEL=ON
+BuildRequires:	flite-devel >= 2.2
 BuildRequires:	fontconfig-devel >= 2.13.0
 BuildRequires:	freetype-devel >= 1:2.9.0
 BuildRequires:	gi-docgen
@@ -49,21 +51,22 @@ BuildRequires:	glib2-devel >= 1:2.70.0
 BuildRequires:	glibc-misc
 BuildRequires:	gobject-introspection-devel
 BuildRequires:	gperf >= 3.0.1
-BuildRequires:	gstreamer-devel >= 1.14.0
-BuildRequires:	gstreamer-gl-devel >= 1.14.0
-# codecparsers,mpegts
-BuildRequires:	gstreamer-plugins-bad-devel >= 1.14.0
-# app,audio,fft,pbutils,tag,video
-BuildRequires:	gstreamer-plugins-base-devel >= 1.14.0
+# gstreamer,gstreamer-base
+BuildRequires:	gstreamer-devel >= 1.18.4
+BuildRequires:	gstreamer-gl-devel >= 1.18.4
+# codecparsers,mpegts,webrtc
+BuildRequires:	gstreamer-plugins-bad-devel >= 1.18.4
+# allocators,app,audio,fft,pbutils,rtp,sdp,tag,video
+BuildRequires:	gstreamer-plugins-base-devel >= 1.18.4
 BuildRequires:	gstreamer-transcoder-devel >= 1.20
-BuildRequires:	harfbuzz-devel >= 1.4.2
-BuildRequires:	harfbuzz-icu-devel >= 1.4.2
+BuildRequires:	harfbuzz-devel >= 2.7.4
+BuildRequires:	harfbuzz-icu-devel >= 2.7.4
 BuildRequires:	lcms2-devel >= 2
 BuildRequires:	libavif-devel >= 0.9.0
 BuildRequires:	libdrm-devel
 BuildRequires:	libepoxy-devel >= 1.5.4
 BuildRequires:	libgcrypt-devel >= 1.7.0
-BuildRequires:	libicu-devel >= 61.2
+BuildRequires:	libicu-devel >= 70.1
 BuildRequires:	libjpeg-devel
 BuildRequires:	libjxl-devel >= 0.7.0
 BuildRequires:	libpng-devel
@@ -74,8 +77,8 @@ BuildRequires:	libstdc++-devel >= 6:11.2
 BuildRequires:	libtasn1-devel
 BuildRequires:	libwebp-devel
 BuildRequires:	libwpe-devel >= 1.14.0
-BuildRequires:	libxml2-devel >= 1:2.8.0
-BuildRequires:	libxslt-devel >= 1.1.7
+BuildRequires:	libxml2-devel >= 1:2.9.13
+BuildRequires:	libxslt-devel >= 1.1.13
 BuildRequires:	openjpeg2-devel >= 2.2.0
 BuildRequires:	perl-base >= 1:5.10.0
 BuildRequires:	pkgconfig
@@ -103,14 +106,14 @@ Requires:	freetype >= 1:2.9.0
 Requires:	glib2 >= 1:2.67.1
 Requires:	gstreamer >= 1.2.3
 Requires:	gstreamer-plugins-base >= 1.2.3
-Requires:	harfbuzz >= 1.4.2
+Requires:	harfbuzz >= 2.7.4
 Requires:	libepoxy >= 1.5.4
 Requires:	libgcrypt >= 1.7.0
 Requires:	libjxl >= 0.7.0
 Requires:	libsoup3 >= 3.0.0
 Requires:	libwpe >= 1.14.0
-Requires:	libxml2 >= 1:2.8.0
-Requires:	libxslt >= 1.1.7
+Requires:	libxml2 >= 1:2.9.13
+Requires:	libxslt >= 1.1.13
 Requires:	openjpeg2 >= 2.2.0
 Requires:	woff2 >= 1.0.2
 Requires:	wpebackend-fdo >= 1.9.0
@@ -174,14 +177,14 @@ Requires:	freetype >= 1:2.9.0
 Requires:	glib2 >= 1:2.70.0
 Requires:	gstreamer >= 1.2.3
 Requires:	gstreamer-plugins-base >= 1.2.3
-Requires:	harfbuzz >= 1.4.2
+Requires:	harfbuzz >= 2.7.4
 Requires:	libepoxy >= 1.5.4
 Requires:	libgcrypt >= 1.7.0
 Requires:	libjxl >= 0.7.0
 Requires:	libsoup3 >= 3.0.0
 Requires:	libwpe >= 1.14.0
-Requires:	libxml2 >= 1:2.8.0
-Requires:	libxslt >= 1.1.7
+Requires:	libxml2 >= 1:2.9.13
+Requires:	libxslt >= 1.1.13
 Requires:	openjpeg2 >= 2.2.0
 Requires:	woff2 >= 1.0.2
 Requires:	wpebackend-fdo >= 1.9.0
@@ -292,13 +295,14 @@ rm -rf $RPM_BUILD_ROOT
 %if "%{_libexecdir}" != "%{_libdir}"
 %dir %{_libexecdir}/wpe-webkit-1.1
 %endif
+%attr(755,root,root) %{_libexecdir}/wpe-webkit-1.1/WPEGPUProcess
 %attr(755,root,root) %{_libexecdir}/wpe-webkit-1.1/WPENetworkProcess
 %attr(755,root,root) %{_libexecdir}/wpe-webkit-1.1/WPEWebProcess
 %attr(755,root,root) %{_libexecdir}/wpe-webkit-1.1/jsc
 %dir %{_libdir}/wpe-webkit-1.1
-%attr(755,root,root) %{_libdir}/wpe-webkit-1.1/libWPEWebInspectorResources.so
 %dir %{_libdir}/wpe-webkit-1.1/injected-bundle
 %attr(755,root,root) %{_libdir}/wpe-webkit-1.1/injected-bundle/libWPEInjectedBundle.so
+%{_datadir}/wpe-webkit-1.1
 
 %files devel
 %defattr(644,root,root,755)
@@ -330,13 +334,14 @@ rm -rf $RPM_BUILD_ROOT
 %if "%{_libexecdir}" != "%{_libdir}"
 %dir %{_libexecdir}/wpe-webkit-2.0
 %endif
+%attr(755,root,root) %{_libexecdir}/wpe-webkit-2.0/WPEGPUProcess
 %attr(755,root,root) %{_libexecdir}/wpe-webkit-2.0/WPENetworkProcess
 %attr(755,root,root) %{_libexecdir}/wpe-webkit-2.0/WPEWebProcess
 %attr(755,root,root) %{_libexecdir}/wpe-webkit-2.0/jsc
 %dir %{_libdir}/wpe-webkit-2.0
-%attr(755,root,root) %{_libdir}/wpe-webkit-2.0/libWPEWebInspectorResources.so
 %dir %{_libdir}/wpe-webkit-2.0/injected-bundle
 %attr(755,root,root) %{_libdir}/wpe-webkit-2.0/injected-bundle/libWPEInjectedBundle.so
+%{_datadir}/wpe-webkit-2.0
 
 %files -n wpe-webkit2-devel
 %defattr(644,root,root,755)
