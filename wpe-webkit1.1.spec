@@ -23,7 +23,7 @@ Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE z obsługą HTT
 Name:		wpe-webkit1.1
 # NOTE: 2.48.x is stable, 2.49.x devel
 Version:	2.48.1
-Release:	1
+Release:	2
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
