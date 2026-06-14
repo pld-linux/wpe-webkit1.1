@@ -1,8 +1,8 @@
---- wpewebkit-2.38.6/Source/WebDriver/PlatformWPE.cmake.orig	2022-08-19 13:14:27.800098000 +0200
-+++ wpewebkit-2.38.6/Source/WebDriver/PlatformWPE.cmake	2023-05-08 06:29:06.521434626 +0200
+--- wpewebkit-2.52.4/Source/WebDriver/PlatformWPE.cmake.orig	2026-02-23 15:40:56.091297100 +0100
++++ wpewebkit-2.52.4/Source/WebDriver/PlatformWPE.cmake	2026-06-13 11:06:58.648943121 +0200
 @@ -1,4 +1,4 @@
 -set(WebDriver_OUTPUT_NAME WPEWebDriver)
 +set(WebDriver_OUTPUT_NAME WPEWebDriver-${WPE_API_VERSION})
  
- list(APPEND WebDriver_SYSTEM_INCLUDE_DIRECTORIES
-     "${GLIB_INCLUDE_DIRS}"
+ list(APPEND WebDriver_SOURCES
+     glib/SessionHostGlib.cpp

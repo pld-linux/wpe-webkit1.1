@@ -1,0 +1,20 @@
+--- wpewebkit-2.52.4/Source/WebKit/PlatformWPE.cmake.orig	2026-03-11 22:45:48.372039000 +0100
++++ wpewebkit-2.52.4/Source/WebKit/PlatformWPE.cmake	2026-06-14 10:15:13.222512124 +0200
+@@ -246,6 +246,7 @@ if (ENABLE_2022_GLIB_API)
+     )
+     list(APPEND WebKit_SOURCES
+         ${WEBKIT_DIR}/UIProcess/API/glib/WebKitWebExtension.cpp
++        ${WEBKIT_DIR}/UIProcess/API/glib/WebKitWebExtensionMatchPattern.cpp
+     )
+ endif ()
+ 
+--- wpewebkit-2.52.4/Source/WebKit/SourcesWPE.txt.orig	2026-02-23 15:40:56.394295500 +0100
++++ wpewebkit-2.52.4/Source/WebKit/SourcesWPE.txt	2026-06-14 10:12:36.003049748 +0200
+@@ -189,7 +189,6 @@ UIProcess/API/glib/WebKitUserContentMana
+ UIProcess/API/glib/WebKitUserMediaPermissionRequest.cpp @no-unify
+ UIProcess/API/glib/WebKitVersion.cpp @no-unify
+ UIProcess/API/glib/WebKitWebContext.cpp @no-unify
+-UIProcess/API/glib/WebKitWebExtensionMatchPattern.cpp @no-unify
+ UIProcess/API/glib/WebKitWebResource.cpp @no-unify
+ UIProcess/API/glib/WebKitWebResourceLoadManager.cpp @no-unify
+ UIProcess/API/glib/WebKitWebView.cpp @no-unify

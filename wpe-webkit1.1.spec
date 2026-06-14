@@ -1,12 +1,12 @@
 # TODO: review configure options:
-# - ENABLE_WEBXR (experimental; BR: OpenXR >= 1.0.9, openxr.pc)?
-# - ENABLE_ENCRYPTED_MEDIA, ENABLE_THUNDER (experimental; https://github.com/rdkcentral/Thunder)?
 # - FTL_JIT on !x86_64?
 # - WEB_RTC (experimental; BR: gstreamer-plugins-bad-devel (webrtc component) >= 1.20, openssl-devel)
 # - WEB_RTC+MEDIA_STREAM (BR: openwebrtc)
-# - ENABLE_WPE_PLATFORM? (BR: libinput-devel >= 1.19.0 wayland-devel >= 1.20 wayland-protocols >= 1.24 xorg-lib-libxkbcommon-devel >= 0.4.0)
+# - ENABLE_ENCRYPTED_MEDIA, ENABLE_THUNDER (experimental; https://github.com/rdkcentral/Thunder)?
+# - ENABLE_WPE_PLATFORM? (BR: libinput-devel >= 1.19.0 wayland-devel >= 1.20 wayland-protocols >= 1.24 xorg-lib-libxkbcommon-devel >= 0.4.0 instead of libwpe; API 2.0 only)
 # - ENABLE_WPE_QT_API? (developer mode)
 # - WEBDRIVER_BIDI (experimental)
+# - ENABLE_WEBXR (experimental; BR: OpenXR >= 1.0.20)
 #
 # Conditional build:
 %bcond_without	api_1_1		# libWPEWebKit-1.1 (libsoup3 based) variant
@@ -14,23 +14,24 @@
 %bcond_with	lowmem		# try to reduce build memory usage by adjusting gcc gc
 #
 # it's not possible to build this with debuginfo on 32bit archs due to
-# memory constraints during linking
-%ifarch %{ix86} x32
+# memory constraints during linking and x86_64 debuginfo packages kill poldek
 %define		_enable_debug_packages		0
-%endif
 Summary:	Port of WebKit embeddable web component to WPE with HTTP/2 support
 Summary(pl.UTF-8):	Port osadzalnego komponentu WWW WebKit do WPE z obsługą HTTP/2
 Name:		wpe-webkit1.1
-# NOTE: 2.48.x is stable, 2.49.x devel
-Version:	2.48.1
-Release:	3
+# NOTE: 2.52.x is stable, 2.53.x devel
+Version:	2.52.4
+Release:	1
 License:	BSD-like
 Group:		X11/Libraries
 Source0:	https://wpewebkit.org/releases/wpewebkit-%{version}.tar.xz
-# Source0-md5:	ec281adecf623944647443296eff30fd
+# Source0-md5:	77e544c3578000456de199fd4fa1c493
 Patch0:		wpe-webkit-x32.patch
+Patch1:		wpewebkit-api1.1-fixes.patch
 Patch2:		wpe-webkit-driver-version-suffix.patch
 Patch3:		parallel-gir.patch
+Patch4:		max-bundle-size.patch
+Patch5:		webkitgtk-serializers.patch
 URL:		https://wpewebkit.org/
 BuildRequires:	/usr/bin/ld.gold
 BuildRequires:	EGL-devel
@@ -46,6 +47,7 @@ BuildRequires:	docbook-dtd412-xml
 BuildRequires:	flite-devel >= 2.2
 BuildRequires:	fontconfig-devel >= 2.13.0
 BuildRequires:	freetype-devel >= 1:2.9.0
+BuildRequires:	gettext-tools
 BuildRequires:	gi-docgen
 BuildRequires:	glib2-devel >= 1:2.70.0
 BuildRequires:	glibc-misc
@@ -61,6 +63,7 @@ BuildRequires:	gstreamer-plugins-base-devel >= 1.18.4
 BuildRequires:	gstreamer-transcoder-devel >= 1.20
 BuildRequires:	harfbuzz-devel >= 2.7.4
 BuildRequires:	harfbuzz-icu-devel >= 2.7.4
+BuildRequires:	hyphen-devel
 BuildRequires:	lcms2-devel >= 2
 BuildRequires:	libavif-devel >= 0.9.0
 BuildRequires:	libdrm-devel
@@ -69,11 +72,13 @@ BuildRequires:	libgcrypt-devel >= 1.7.0
 BuildRequires:	libicu-devel >= 70.1
 BuildRequires:	libjpeg-devel
 BuildRequires:	libjxl-devel >= 0.7.0
+# WPE_PLATFORM only
+#BuildRequires:	libmanette-devel >= 0.2.4
 BuildRequires:	libpng-devel
 BuildRequires:	libseccomp-devel
 BuildRequires:	libsoup3-devel >= 3.0
-# -std=c++23
-BuildRequires:	libstdc++-devel >= 6:11.2
+# -std=c++23; WebKitCommon.cmake says gcc 12.2.0 is minimum
+BuildRequires:	libstdc++-devel >= 6:12.2
 BuildRequires:	libtasn1-devel
 BuildRequires:	libwebp-devel
 BuildRequires:	libwpe-devel >= 1.14.0
@@ -103,7 +108,7 @@ Requires:	atk >= 1:2.16.0
 Requires:	cairo >= 1.16.0
 Requires:	fontconfig-libs >= 2.13.0
 Requires:	freetype >= 1:2.9.0
-Requires:	glib2 >= 1:2.67.1
+Requires:	glib2 >= 1:2.70.0
 Requires:	gstreamer >= 1.2.3
 Requires:	gstreamer-plugins-base >= 1.2.3
 Requires:	harfbuzz >= 2.7.4
@@ -120,8 +125,6 @@ Requires:	wpebackend-fdo >= 1.9.0
 # Source/JavaScriptCore/CMakeLists.txt /WTF_CPU_
 ExclusiveArch:	%{ix86} %{x8664} x32 %{arm} aarch64 hppa mips ppc ppc64 ppc64le s390 s390x sh4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-%define		_enable_debug_packages	0
 
 %description
 wpe-webkit1.1 is a port of the WebKit embeddable web component to WPE
@@ -142,7 +145,7 @@ Summary:	Development files for WebKit for WPE
 Summary(pl.UTF-8):	Pliki programistyczne komponentu WebKit dla WPE
 Group:		X11/Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	glib2-devel >= 1:2.67.1
+Requires:	glib2-devel >= 1:2.70.0
 Requires:	libsoup3-devel >= 3.0.0
 Requires:	libstdc++-devel >= 6:11.2
 Requires:	libwpe-devel >= 1.14.0
@@ -234,12 +237,16 @@ Dokumentacja API portu WebKitu do WPE z obsługą HTTP/2.
 %prep
 %setup -q -n wpewebkit-%{version}
 %patch -P0 -p1
+%patch -P1 -p1
 %patch -P2 -p1
 %patch -P3 -p1
+%patch -P4 -p1
+%patch -P5 -p1
 
 %build
 CXXFLAGS="%{rpmcxxflags} -DNDEBUG %{?with_lowmem:--param ggc-min-expand=20 --param ggc-min-heapsize=65536}"
 for kind in %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:soup3-2.0} ; do
+# USE_SYSTEM_MALLOC=ON (default in 32-bit builds) is broken as of v2.52.4 (bmalloc_CopyHeaders referred unconditionally in Source/JavaScriptCore/CMakeLists.txt)
 %cmake -B build-${kind} \
 	-DENABLE_GEOLOCATION=ON \
 	-DENABLE_GTKDOC=ON \
@@ -257,7 +264,9 @@ for kind in %{?with_api_1_1:soup3-1.1} %{?with_api_2_0:soup3-2.0} ; do
 %endif
 	-DPORT=WPE \
 	-DSHOULD_INSTALL_JS_SHELL=ON \
-	-DUSE_LIBBACKTRACE=OFF
+	-DUSE_LIBBACKTRACE=OFF \
+	-DUSE_SYSTEM_MALLOC=OFF \
+	%{?max_bundle_size:-DUNIFIED_BUILD_MAX_BUNDLE_SIZE=%{max_bundle_size}}
 
 %{__make} -C build-${kind}
 done
@@ -287,8 +296,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc NEWS
 %attr(755,root,root) %{_bindir}/WPEWebDriver-1.1
-%attr(755,root,root) %{_libdir}/libWPEWebKit-1.1.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libWPEWebKit-1.1.so.0
+%{_libdir}/libWPEWebKit-1.1.so.*.*.*
+%ghost %{_libdir}/libWPEWebKit-1.1.so.0
 %{_libdir}/girepository-1.0/WPEJavaScriptCore-1.1.typelib
 %{_libdir}/girepository-1.0/WPEWebExtension-1.1.typelib
 %{_libdir}/girepository-1.0/WPEWebKit-1.1.typelib
@@ -301,12 +310,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libexecdir}/wpe-webkit-1.1/jsc
 %dir %{_libdir}/wpe-webkit-1.1
 %dir %{_libdir}/wpe-webkit-1.1/injected-bundle
-%attr(755,root,root) %{_libdir}/wpe-webkit-1.1/injected-bundle/libWPEInjectedBundle.so
+%{_libdir}/wpe-webkit-1.1/injected-bundle/libWPEInjectedBundle.so
 %{_datadir}/wpe-webkit-1.1
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libWPEWebKit-1.1.so
+%{_libdir}/libWPEWebKit-1.1.so
 %{_includedir}/wpe-webkit-1.1
 %{_datadir}/gir-1.0/WPEJavaScriptCore-1.1.gir
 %{_datadir}/gir-1.0/WPEWebExtension-1.1.gir
@@ -326,8 +335,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc NEWS
 %attr(755,root,root) %{_bindir}/WPEWebDriver-2.0
-%attr(755,root,root) %{_libdir}/libWPEWebKit-2.0.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libWPEWebKit-2.0.so.1
+%{_libdir}/libWPEWebKit-2.0.so.*.*.*
+%ghost %{_libdir}/libWPEWebKit-2.0.so.1
 %{_libdir}/girepository-1.0/WPEJavaScriptCore-2.0.typelib
 %{_libdir}/girepository-1.0/WPEWebKit-2.0.typelib
 %{_libdir}/girepository-1.0/WPEWebProcessExtension-2.0.typelib
@@ -340,12 +349,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libexecdir}/wpe-webkit-2.0/jsc
 %dir %{_libdir}/wpe-webkit-2.0
 %dir %{_libdir}/wpe-webkit-2.0/injected-bundle
-%attr(755,root,root) %{_libdir}/wpe-webkit-2.0/injected-bundle/libWPEInjectedBundle.so
+%{_libdir}/wpe-webkit-2.0/injected-bundle/libWPEInjectedBundle.so
 %{_datadir}/wpe-webkit-2.0
 
 %files -n wpe-webkit2-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libWPEWebKit-2.0.so
+%{_libdir}/libWPEWebKit-2.0.so
 %{_includedir}/wpe-webkit-2.0
 %{_datadir}/gir-1.0/WPEJavaScriptCore-2.0.gir
 %{_datadir}/gir-1.0/WPEWebKit-2.0.gir
